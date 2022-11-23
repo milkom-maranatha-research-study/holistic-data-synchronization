@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  sync:
+    build: .
+    volumes:
+     - .:/holistic-data-sync
+    ports:
+     - 8001:8001
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    command: ./sync.sh
