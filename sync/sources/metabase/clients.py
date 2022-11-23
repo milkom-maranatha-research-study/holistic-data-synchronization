@@ -169,7 +169,7 @@ class MetabaseAPIClient:
 
             with open(download_as, 'wb') as file:
 
-                for chunk in request.iter_content(chunk_size): 
+                for chunk in request.iter_content(chunk_size):
                     if not chunk:
                         continue
 
