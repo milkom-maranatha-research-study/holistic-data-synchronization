@@ -27,6 +27,7 @@ class TherapistJoiningNicedayOperation:
         self.data = self._validate(data)
 
     def _validate(self, data):
+
         if len(data) < 1:
             raise ValueError(
                 {self.api._THERS_JOINING_ND_FILE: 'The CSV File is empty or invalid.'}
