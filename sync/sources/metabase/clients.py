@@ -164,8 +164,8 @@ class TherapistJoiningNicedayAPI(MetabaseAPIClient):
     def __init__(self) -> None:
         super().__init__()
 
-        self._THER_JOINING_ND_CARD_ID = 2060
-        self._THER_JOINING_ND_FILE = '.thers_joining_nd.csv.tmp'
+        self._THERS_JOINING_ND_CARD_ID = 2060
+        self._THERS_JOINING_ND_FILE = '.thers_joining_nd.csv.tmp'
 
     def download_data(self, format='csv') -> None:
         """
@@ -174,9 +174,9 @@ class TherapistJoiningNicedayAPI(MetabaseAPIClient):
         if format not in ['json', 'csv', 'xlsx', 'api']:
             raise ValueError(f'{format} is invalid format.')
 
-        path = f'/card/{self._THER_JOINING_ND_CARD_ID}/query/{format}'
+        path = f'/card/{self._THERS_JOINING_ND_CARD_ID}/query/{format}'
 
-        self._download(self._THER_JOINING_ND_FILE, path)
+        self._download(self._THERS_JOINING_ND_FILE, path)
 
 
 class TherapistInteractionAPI(MetabaseAPIClient):
@@ -184,8 +184,8 @@ class TherapistInteractionAPI(MetabaseAPIClient):
     def __init__(self) -> None:
         super().__init__()
 
-        self._THER_INTRACTION_CARD_ID = 2061
-        self._THER_INTERACTION_FILE = '.ther_interaction.csv.tmp'
+        self._THER_INTERACTIONS_CARD_ID = 2061
+        self._THER_INTERACTIONS_FILE = '.ther_interactions.csv.tmp'
 
     def download_data(self, format='csv') -> None:
         """
@@ -194,6 +194,6 @@ class TherapistInteractionAPI(MetabaseAPIClient):
         if format not in ['json', 'csv', 'xlsx', 'api']:
             raise ValueError(f'{format} is invalid format.')
 
-        path = f'/card/{self._THER_INTRACTION_CARD_ID}/query/{format}'
+        path = f'/card/{self._THER_INTERACTIONS_CARD_ID}/query/{format}'
 
-        self._download(self._THER_INTERACTION_FILE, path)
+        self._download(self._THER_INTERACTIONS_FILE, path)

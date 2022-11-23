@@ -23,13 +23,13 @@ class TherapistJoiningNicedayOperation:
         if not settings.DEV_MODE:
             self.api.download_data()
 
-        data = csv_to_list(self.api._THER_JOINING_ND_FILE)
+        data = csv_to_list(self.api._THERS_JOINING_ND_FILE)
         self.data = self._validate(data)
 
     def _validate(self, data):
         if len(data) < 1:
             raise ValueError(
-                {self.api._THER_JOINING_ND_FILE: 'The CSV File is empty or invalid.'}
+                {self.api._THERS_JOINING_ND_FILE: 'The CSV File is empty or invalid.'}
             )
 
         headers = data.pop(0)
@@ -37,7 +37,7 @@ class TherapistJoiningNicedayOperation:
 
         if set(headers) != set(expected_headers):
             raise ValueError(
-                {self.api._THER_JOINING_ND_FILE: 'The headers of CSV File has changed!'}
+                {self.api._THERS_JOINING_ND_FILE: 'The headers of CSV File has changed!'}
             )
 
         return data
@@ -59,14 +59,14 @@ class TherapistInteractionOperation:
         if not settings.DEV_MODE:
             self.api.download_data()
 
-        data = csv_to_list(self.api._THER_INTERACTION_FILE)
+        data = csv_to_list(self.api._THER_INTERACTIONS_FILE)
         self.data = self._validate(data)
 
     def _validate(self, data):
 
         if len(data) < 1:
             raise ValueError(
-                {self.api._THER_INTERACTION_FILE: 'The CSV File is empty or invalid.'}
+                {self.api._THER_INTERACTIONS_FILE: 'The CSV File is empty or invalid.'}
             )
 
         headers = data.pop(0)
@@ -74,7 +74,7 @@ class TherapistInteractionOperation:
 
         if set(headers) != set(expected_headers):
             raise ValueError(
-                {self.api._THER_INTERACTION_FILE: 'The headers of CSV File has changed!'}
+                {self.api._THER_INTERACTIONS_FILE: 'The headers of CSV File has changed!'}
             )
 
         return data
