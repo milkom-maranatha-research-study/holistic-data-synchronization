@@ -21,4 +21,4 @@ jobs:
         run: |
           flake8 --ignore=E501,E271,E272,W602,W504 --exclude=submodules
       - name: Run All Test
-        run: docker exec holistic-data-synchronization_sync_1 ./manage.py test
+        run: python -m unittest discover
