@@ -185,7 +185,7 @@ class TherapistInteractionAPI(MetabaseAPIClient):
         super().__init__()
 
         self._THER_INTRACTION_CARD_ID = 2061
-        self._THER_INTERACTION_FILE = '.ther_interactions.csv.tmp'
+        self._THER_INTERACTION_FILE = '.ther_interaction.csv.tmp'
 
     def download_data(self, format='csv') -> None:
         """
