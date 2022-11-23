@@ -1,48 +1,26 @@
-import textwrap
+from datetime import datetime
 
 
-def request_tracer(response, *args, **kwargs) -> None:
+def endpoint_tracer(response, *args, **kwargs) -> None:
     """
-    A hook function to print-out request from the requests module.
+    A hook function to print-out response from the requests module.
     """
-    headers = '\n'.join(
-        f'{key}: {value}'
-        for key, value in response.request.headers.items()
-    )
+    timestamp = datetime.now().isoformat()
 
-    print(textwrap.dedent(
-        '''
-        ---------------- REQUEST -----------------
-        {req.method} {req.url}
-        {headers}
+    endpoint = f"{timestamp}: {response.request.method} {response.url}"
+    res_code = f"{response.status_code} {response.reason}"
 
-        {req.body}
-        '''
-    ).format(
-        req=response.request,
-        headers=headers,
-    ))
+    print(f"\n{endpoint} - {res_code}")
 
 
 def response_tracer(response, *args, **kwargs) -> None:
     """
     A hook function to print-out response from the requests module.
     """
-    headers = '\n'.join(
-        f'{key}: {value}'
-        for key, value in response.headers.items()
-    )
+    timestamp = datetime.now().isoformat()
 
-    print(textwrap.dedent(
-        '''
-        ---------------- RESPONSE ----------------
-        {res.status_code} {res.reason} {res.url}
-        {headers}
+    endpoint = f"{timestamp}: {response.request.method} {response.url}"
+    res_code = f"{response.status_code} {response.reason}"
+    res_data = f"{timestamp}: {str(response.content, 'utf-8')}"
 
-        {body}
-        '''
-    ).format(
-        res=response,
-        headers=headers,
-        body=response.json()
-    ))
+    print(f"\n{endpoint} - {res_code}\n{res_data}")

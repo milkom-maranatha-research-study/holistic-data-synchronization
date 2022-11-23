@@ -2,7 +2,7 @@
 
 RUN_LOCALLY="$1"
 
-if [[ $RUN_LOCALLY =~ ^(yes)$ ]]; then
+if [[ $RUN_LOCALLY =~ ^(locally)$ ]]; then
     . .env
 
     export PYTHONPATH="$PWD/sync"

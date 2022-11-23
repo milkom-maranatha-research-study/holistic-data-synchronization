@@ -1,12 +1,11 @@
 import requests
-
 import settings
 
 from os.path import exists
 from requests.exceptions import HTTPError
-from typing import Dict, Union
+from typing import Union
 
-from tracers import request_tracer, response_tracer
+from tracers import endpoint_tracer, response_tracer
 
 
 class MetabaseAPIClient:
@@ -102,22 +101,17 @@ class MetabaseAPIClient:
     def _auth_request(self, method, path, payload=None, headers=None) -> requests.Response:
 
         url = self._METABASE_URL_API + path
-        default_headers = {
+        req_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
 
         if headers:
-            default_headers.update(headers)
+            req_headers.update(headers)
 
-        response = requests.request(
-            method,
-            url,
-            json=payload,
-            headers=headers,
-            hooks=self._get_hook_requests()
-        )
+        hooks = {'response': response_tracer} if settings.DEBUG_MODE else None
 
+        response = requests.request(method, url, json=payload, headers=req_headers, hooks=hooks)
         response.raise_for_status()
 
         return response
@@ -125,23 +119,18 @@ class MetabaseAPIClient:
     def _api_request(self, method, path, payload=None, headers=None) -> requests.Response:
 
         url = self._METABASE_URL_API + path
-        default_headers = {
+        req_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-Metabase-Session": self._SESSION_ID if hasattr(self, '_SESSION_ID') else None
         }
 
         if headers:
-            default_headers.update(headers)
+            req_headers.update(headers)
 
-        response = requests.request(
-            method,
-            url,
-            json=payload,
-            headers=default_headers,
-            hooks=self._get_hook_requests()
-        )
+        hooks = {'response': response_tracer} if settings.DEBUG_MODE else None
 
+        response = requests.request(method, url, json=payload, headers=req_headers, hooks=hooks)
         response.raise_for_status()
 
         return response
@@ -149,42 +138,25 @@ class MetabaseAPIClient:
     def _download(self, download_as, path, payload=None, headers=None) -> None:
 
         url = self._METABASE_URL_API + path
-        default_headers = {
+        req_headers = {
             "Accept": "*/*",
             "X-Metabase-Session": self._SESSION_ID
         }
 
         if headers:
-            default_headers.update(headers)
+            req_headers.update(headers)
 
         chunk_size = 4096
+        hooks = {'response': endpoint_tracer} if settings.DEBUG_MODE else None
 
-        with requests.post(
-            url,
-            data=payload,
-            headers=default_headers,
-            stream=True,
-            hooks=self._get_hook_requests()
-        ) as request:
-
+        with requests.post(url, data=payload, headers=req_headers, stream=True, hooks=hooks) as req:
             with open(download_as, 'wb') as file:
-
-                for chunk in request.iter_content(chunk_size):
+                # Writes response data in chunk
+                for chunk in req.iter_content(chunk_size):
                     if not chunk:
                         continue
 
                     file.write(chunk)
-
-    def _get_hook_requests(self) -> Union[Dict, None]:
-        """
-        Returns dictionary that contains predefined hook functions
-        for printing out HTTP request and its response from the requests module.
-        """
-
-        if settings.DEBUG_MODE:
-            return {'response': [request_tracer, response_tracer]}
-
-        return None
 
 
 class TherapistJoiningNicedayAPI(MetabaseAPIClient):
@@ -195,15 +167,14 @@ class TherapistJoiningNicedayAPI(MetabaseAPIClient):
         self._THER_JOINING_ND_CARD_ID = 2060
         self._THER_JOINING_ND_FILE = '.thers_joining_nd.csv.tmp'
 
-    def download(self) -> None:
+    def download_data(self, format='csv') -> None:
         """
-        Download all Therapist Interaction data from Metabase in CSV format.
+        Downloads Therapist Joining Niceday data from Metabase in CSV format.
         """
+        if format not in ['json', 'csv', 'xlsx', 'api']:
+            raise ValueError(f'{format} is invalid format.')
 
-        # Available download options ['json', 'csv', 'xlsx', 'api']
-        download_type = 'csv'
-
-        path = f'/card/{self._THER_JOINING_ND_CARD_ID}/{download_type}'
+        path = f'/card/{self._THER_JOINING_ND_CARD_ID}/query/{format}'
 
         self._download(self._THER_JOINING_ND_FILE, path)
 
@@ -216,14 +187,13 @@ class TherapistInteractionAPI(MetabaseAPIClient):
         self._THER_INTRACTION_CARD_ID = 2061
         self._THER_INTERACTION_FILE = '.ther_interactions.csv.tmp'
 
-    def download(self) -> None:
+    def download_data(self, format='csv') -> None:
         """
-        Download all Therapist Interaction data from Metabase in CSV format.
+        Downloads Therapist Interaction data from Metabase in CSV format.
         """
+        if format not in ['json', 'csv', 'xlsx', 'api']:
+            raise ValueError(f'{format} is invalid format.')
 
-        # Available download options ['json', 'csv', 'xlsx', 'api']
-        download_type = 'csv'
-
-        path = f'/card/{self._THER_INTRACTION_CARD_ID}/{download_type}'
+        path = f'/card/{self._THER_INTRACTION_CARD_ID}/query/{format}'
 
         self._download(self._THER_INTERACTION_FILE, path)
