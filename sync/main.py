@@ -7,7 +7,7 @@ from sources.metabase.operations import (
 class TherapistOrganizationSync:
 
     def __init__(self) -> None:
-        self.metabase_operation = TherapistJoiningNicedayOperation()
+        self.operation = TherapistJoiningNicedayOperation()
 
     def start(self):
         self._sync_organizations()
@@ -25,7 +25,7 @@ class TherapistOrganizationSync:
 class TherapistInteractionSync:
 
     def __init__(self) -> None:
-        self.metabase_operation = TherapistInteractionOperation()
+        self.operation = TherapistInteractionOperation()
 
     def start(self):
         self._sync_interactions()

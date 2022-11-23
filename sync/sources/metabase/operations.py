@@ -42,6 +42,7 @@ class TherapistJoiningNicedayOperation:
 
         return data
 
+
 class TherapistInteractionOperation:
 
     def __init__(self) -> None:
