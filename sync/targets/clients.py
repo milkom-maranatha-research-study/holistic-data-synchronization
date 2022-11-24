@@ -3,7 +3,7 @@ import settings
 
 from os.path import exists
 from requests.exceptions import HTTPError
-from typing import Dict, Union
+from typing import List, Dict, Union
 
 from tracers import response_tracer
 
@@ -140,9 +140,9 @@ class BackendAPIClient:
 
 class OrganizationAPI(BackendAPIClient):
 
-    def upsert(self, organizations) -> Dict:
+    def upsert(self, organizations: List[Dict]) -> Dict:
         """
-        Upsert Organizations.
+        Create or update organizations in the Backend.
         """
 
         method = 'POST'
@@ -155,9 +155,9 @@ class OrganizationAPI(BackendAPIClient):
 
 class TherapistOrganizationAPI(BackendAPIClient):
 
-    def upsert(self, org_id, therapists) -> Dict:
+    def upsert(self, org_id: int, therapists: List[Dict]) -> Dict:
         """
-        Upsert Therapists of the Organization.
+        Create or update therapists belonging to the specific organization in the Backend.
         """
 
         method = 'POST'
@@ -170,9 +170,9 @@ class TherapistOrganizationAPI(BackendAPIClient):
 
 class TherapistInteractionAPI(BackendAPIClient):
 
-    def upsert(self, ther_id, interactions) -> Dict:
+    def upsert(self, ther_id: str, interactions: List[Dict]) -> Dict:
         """
-        Upsert Therapist Interactions.
+        Create or update interactions of that specific therapist ID in the Backend.
         """
 
         method = 'POST'
