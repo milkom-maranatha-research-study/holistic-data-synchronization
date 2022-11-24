@@ -2,12 +2,20 @@ from sources.metabase.operations import (
     TherapistJoiningNicedayOperation,
     TherapistInteractionOperation
 )
+from targets.operations import (
+    OrganizationBackendOperation,
+    TherapistsOrganizationBackendOperation,
+    TherapistsInteractionBackendOperation
+)
 
 
 class TherapistOrganizationSync:
 
     def __init__(self) -> None:
-        self.operation = TherapistJoiningNicedayOperation()
+
+        self.mb_thers_join_niceday_operation = TherapistJoiningNicedayOperation()
+        self.be_org_operation = OrganizationBackendOperation()
+        self.be_thers_org = TherapistsOrganizationBackendOperation()
 
     def start(self):
         self._sync_organizations()
@@ -25,7 +33,8 @@ class TherapistOrganizationSync:
 class TherapistInteractionSync:
 
     def __init__(self) -> None:
-        self.operation = TherapistInteractionOperation()
+        self.mb_ther_interactions_operation = TherapistInteractionOperation()
+        self.be_ther_interactions_operation = TherapistsInteractionBackendOperation()
 
     def start(self):
         self._sync_interactions()
