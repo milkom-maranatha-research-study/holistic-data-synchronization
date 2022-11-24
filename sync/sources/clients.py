@@ -52,7 +52,7 @@ class MetabaseAPIClient:
 
         return session_id
 
-    def _validate_session_id(self, session_id) -> bool:
+    def _validate_session_id(self, session_id: str) -> bool:
         """
         Returns True if that `session_id` is valid.
         If we can retrieve the user profile belonging to that `session_id`,
@@ -74,7 +74,7 @@ class MetabaseAPIClient:
 
         return True
 
-    def _write_session_id(self, session_id) -> None:
+    def _write_session_id(self, session_id: str) -> None:
         """
         Write that `session_id` into disk.
         """
