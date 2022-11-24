@@ -1,49 +1,84 @@
+import logging
+
 from sources.operations import (
-    TherapistJoiningNicedayOperation,
-    TherapistInteractionOperation
+    TherapistJoiningNicedayMetabaseOperation,
+    TherapistInteractionsMetabaseOperation
 )
 from targets.operations import (
     OrganizationBackendOperation,
     TherapistsOrganizationBackendOperation,
-    TherapistsInteractionBackendOperation
+    TherapistInteractionsBackendOperation
 )
 
 
-class TherapistOrganizationSync:
+logger = logging.getLogger(__name__)
+
+
+class TherapistsOrganizationSync:
 
     def __init__(self) -> None:
+        self.metabase_operation = TherapistJoiningNicedayMetabaseOperation()
 
-        self.mb_thers_join_niceday_operation = TherapistJoiningNicedayOperation()
-        self.be_org_operation = OrganizationBackendOperation()
-        self.be_thers_org = TherapistsOrganizationBackendOperation()
+        self.backend_org_operation = OrganizationBackendOperation()
+        self.backend_thers_org_operation = TherapistsOrganizationBackendOperation()
 
-    def start(self):
+        self.metabase_operation.collect_data()
+
         self._sync_organizations()
-        self._sync_therapists_organizations()
+        self._sync_therapists_organization_in_batch()
 
     def _sync_organizations(self):
-        # TODO:
-        pass
+        """
+        Runs full synchronization of the Organization objects.
+        """
 
-    def _sync_therapists_organizations(self):
-        # TODO:
-        pass
+        logger.info("Upserting Organization objects in the Backend...")
+
+        organizations = self.metabase_operation.get_organizations()
+        self.backend_org_operation.upsert(organizations)
+
+    def _sync_therapists_organization_in_batch(self):
+        """
+        Runs batch synchronization for every Therapists Organization.
+        """
+
+        size = self.metabase_operation.get_data_size()
+        num_items_per_batch = 1000
+        batch_size = size // num_items_per_batch + 1  # Ignores remainder
+
+        start = 0
+
+        for iteration in range(0, batch_size):
+            tag = f"Batch {iteration + 1}"
+
+            logger.info(f"{tag} - Upserting every Therapists Organization object in the Backend...")
+
+            end = (iteration + 1) * num_items_per_batch
+
+            therapists_org_map = self.metabase_operation.get_therapists_organization_map(start, end)
+
+            for org_id, therapists in therapists_org_map.items():
+                self.backend_thers_org_operation.upsert(org_id, therapists)
+
+            start = end
 
 
-class TherapistInteractionSync:
+class TherapistInteractionsSync:
 
     def __init__(self) -> None:
-        self.mb_ther_interactions_operation = TherapistInteractionOperation()
-        self.be_ther_interactions_operation = TherapistsInteractionBackendOperation()
+        self.metabase_operation = TherapistInteractionsMetabaseOperation()
 
-    def start(self):
-        self._sync_interactions()
+        self.backend_therapist_interactions = TherapistInteractionsBackendOperation()
 
-    def _sync_interactions(self):
+        self.metabase_operation.collect_data()
+
+        self._sync_interactions_of_therapist_in_batch()
+
+    def _sync_interactions_of_therapist_in_batch(self):
         # TODO:
         pass
 
 
 if __name__ == '__main__':
-    TherapistOrganizationSync().start()
-    TherapistInteractionSync().start()
+    TherapistsOrganizationSync()
+    TherapistInteractionsSync()

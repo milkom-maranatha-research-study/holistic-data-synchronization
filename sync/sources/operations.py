@@ -105,7 +105,7 @@ class TherapistJoiningNicedayMetabaseOperation:
         return data
 
 
-class TherapistInteractionMetabaseOperation:
+class TherapistInteractionsMetabaseOperation:
     mapper = TherapistInteractionsMapper()
 
     def __init__(self) -> None:
