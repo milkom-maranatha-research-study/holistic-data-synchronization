@@ -1,4 +1,4 @@
-from sources.metabase.operations import (
+from sources.operations import (
     TherapistJoiningNicedayOperation,
     TherapistInteractionOperation
 )

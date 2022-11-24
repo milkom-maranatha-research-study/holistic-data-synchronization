@@ -1,7 +1,7 @@
 import settings
 
-from sources.metabase.helpers import csv_to_list
-from sources.metabase.clients import (
+from sources.helpers import csv_to_list
+from sources.clients import (
     TherapistJoiningNicedayAPI,
     TherapistInteractionAPI
 )
