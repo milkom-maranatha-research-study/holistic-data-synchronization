@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from typing import List, Tuple
 
+
 class DateUtil:
 
     def get_periods_from(self, start: datetime, end: datetime, period_type: str) -> List[Tuple]:
@@ -43,13 +44,12 @@ class DateUtil:
 
         while start <= end:
             start_of_week, end_of_week = self.get_week_period_of(start)
-            
+
             periods.append((start_of_week, end_of_week))
 
             start = end_of_week + timedelta(days=1)
 
         return periods
-
 
     def get_monthly_periods(self, start: datetime, end: datetime) -> List[Tuple]:
         """
@@ -71,7 +71,7 @@ class DateUtil:
 
         while start <= end:
             start_of_month, end_of_month = self.get_month_period_of(start)
-            
+
             periods.append((start_of_month, end_of_month))
 
             start = end_of_month + timedelta(days=1)
