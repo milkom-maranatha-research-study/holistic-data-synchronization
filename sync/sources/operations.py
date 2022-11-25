@@ -138,7 +138,7 @@ class TherapistInteractionsMetabaseOperation:
     def get_interactions_therapist_map(self, start: datetime, end: datetime) -> Dict:
         """
         Returns chunked of therapist interactions data map from the CSV file
-        based on the given `start` and `end` dates within a specific period type.
+        based on the given `start` and `end` dates.
         """
 
         assert hasattr(self, 'data'), (
