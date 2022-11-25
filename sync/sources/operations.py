@@ -152,7 +152,10 @@ class TherapistInteractionsMetabaseOperation:
 
     def get_interaction_date_periods(self, period_type: str) -> List[Tuple]:
         """
-        Extracts and return a list of interaction date periods from the `self.data`.
+        Extracts and return a list of interaction date periods from the `self.data`
+        with that specific `period_type`.
+
+        Acceptable period type is either `'weekly'` or `'monthly'`.
         """
 
         assert hasattr(self, 'data'), (
@@ -190,16 +193,31 @@ class TherapistInteractionsMetabaseOperation:
         """
         Returns tuple of the bottom-top interaction dates.
         """
+        bottom_date = None
+        top_date = None
 
         # Assumed the order of the list items is correct
         # (therapist_id, interaction_date, chat_count, call_count)
-        interation_dates = {
-            parse(list_item[1], yearfirst=True)
-            for list_item in self.data
-        }
+        for list_item in self.data:
+            date = parse(list_item[1], yearfirst=True)
 
-        bottom_date = min(interation_dates)
-        top_date = max(interation_dates)
+            # Bottom-top interaction dates initialization
+            if bottom_date is None and top_date is None:
+
+                bottom_date = date
+                top_date = date
+
+                continue
+
+            # If incoming `date` is less than bottom date,
+            # replace current bottom date with it.
+            if date < bottom_date:
+                bottom_date = date
+
+            # If incoming `date` is greater than top date,
+            # replace current top date with it.
+            if date > top_date:
+                top_date = date
 
         return (bottom_date, top_date)
 
@@ -212,10 +230,11 @@ class TherapistInteractionsMetabaseOperation:
 
         filtered_items = []
 
+        # Assumed the order of the list items is correct
+        # (therapist_id, interaction_date, chat_count, call_count)
         for list_item in self.data:
-            _, interaction_date_str, _, _ = list_item
 
-            date = parse(interaction_date_str, yearfirst=True)
+            date = parse(list_item[1], yearfirst=True)
 
             if date >= start and date <= end:
                 filtered_items.append(list_item)
