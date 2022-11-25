@@ -4,10 +4,10 @@ from os.path import exists
 from typing import List
 
 
-def csv_to_list(filename) -> List:
+def csv_to_list(filename) -> List[List]:
     """
     Read CSV data from a temporary file defined in that `filename`
-    and return it as a list.
+    and return it as a list of lists.
     """
 
     if not exists(filename):
