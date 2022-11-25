@@ -18,6 +18,8 @@ HOLISTIC_SERVICE_ACCOUNT_PASSWORD = os.environ.get('HOLISTIC_SERVICE_ACCOUNT_PAS
 
 def configure_logging():
     if DEBUG_MODE:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
+        logging.root.setLevel(logging.INFO)
         logging.basicConfig(level=logging.INFO)
+    else:
+        logging.root.setLevel(logging.WARNING)
+        logging.basicConfig(level=logging.WARNING)
