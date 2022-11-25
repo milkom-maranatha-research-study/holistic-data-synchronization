@@ -217,7 +217,7 @@ class TherapistInteractionsMetabaseOperation:
 
             date = parse(interaction_date_str, yearfirst=True)
 
-            if date >= start and date < end:
+            if date >= start and date <= end:
                 filtered_items.append(list_item)
 
         return filtered_items
