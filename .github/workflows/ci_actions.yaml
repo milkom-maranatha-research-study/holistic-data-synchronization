@@ -21,4 +21,6 @@ jobs:
         run: |
           flake8 --ignore=E501,E271,E272,W602,W504 --exclude=submodules
       - name: Run All Test
-        run: python -m unittest discover
+        run: |
+          pip install python-dateutil==2.8.2
+          python -m unittest discover
