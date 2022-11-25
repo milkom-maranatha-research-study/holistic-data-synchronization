@@ -99,9 +99,6 @@ class BackendAPIClient:
 
         url = settings.HOLISTIC_BACKEND_URL + path
 
-        from pdb import set_trace
-        set_trace()
-
         req_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json"
