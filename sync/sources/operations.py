@@ -1,14 +1,20 @@
 import logging
 import settings
 
-from typing import List, Dict
+from datetime import datetime
+from dateutil.parser import parse
+from typing import List, Dict, Tuple
 
 from sources.clients import (
     TherapistJoiningNicedayAPI,
     TherapistInteractionAPI
 )
 from sources.helpers import csv_to_list
-from sources.mappers import TherapistOrganizationMapper, TherapistInteractionsMapper
+from sources.mappers import (
+    TherapistOrganizationMapper,
+    TherapistInteractionsMapper
+)
+from sources.dateutils import DateUtil
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +53,7 @@ class TherapistJoiningNicedayMetabaseOperation:
 
         return self.mapper.to_organization_dictionaries(self.data)
 
-    def get_therapists_organization_map(self, start=0, end=0) -> Dict:
+    def get_therapists_organization_map(self, start: int, end: int) -> Dict:
         """
         Returns chunked of therapists organization data map from the CSV file
         based on the given `start` and `end` indexes.
@@ -82,7 +88,7 @@ class TherapistJoiningNicedayMetabaseOperation:
 
         return len(self.data)
 
-    def _validate(self, data: List[str]) -> List[str]:
+    def _validate(self, data: List[List]) -> List[List]:
         """
         Validates downloaded CSV `data` and removes the header's row from it.
 
@@ -107,6 +113,7 @@ class TherapistJoiningNicedayMetabaseOperation:
 
 class TherapistInteractionsMetabaseOperation:
     mapper = TherapistInteractionsMapper()
+    dateutil = DateUtil()
 
     def __init__(self) -> None:
         self.api = TherapistInteractionAPI()
@@ -126,10 +133,12 @@ class TherapistInteractionsMetabaseOperation:
         data = csv_to_list(self.api._THER_INTERACTIONS_FILE)
         self.data = self._validate(data)
 
-    def get_interactions_therapist_map(self, start=0, end=0) -> Dict:
+        self.top_bottom_dates = self._get_bottom_top_interaction_dates()
+
+    def get_interactions_therapist_map(self, start: datetime, end: datetime) -> Dict:
         """
-        Returns chunked of interactions of the therapist data map from the CSV file
-        based on the given `start` and `end` indexes.
+        Returns chunked of therapist interactions data map from the CSV file
+        based on the given `start` and `end` dates within a specific period type.
         """
 
         assert hasattr(self, 'data'), (
@@ -137,21 +146,13 @@ class TherapistInteractionsMetabaseOperation:
             'You must call `.collect_data()` first.'
         )
 
-        data_size = self.get_data_size()
-
-        if data_size == 0:
-            return {}
-
-        start = start if start >= 0 else 0
-        end = end if end < data_size else data_size
-
-        sliced_data = self.data[start:end]
+        sliced_data = self._filter_data_from(start, end)
 
         return self.mapper.to_therapist_interaction_map(sliced_data)
 
-    def get_data_size(self) -> int:
+    def get_interaction_date_periods(self, period_type: str) -> List[Tuple]:
         """
-        Returns the size of data
+        Extracts and return a list of interaction date periods from the `self.data`.
         """
 
         assert hasattr(self, 'data'), (
@@ -159,9 +160,11 @@ class TherapistInteractionsMetabaseOperation:
             'You must call `.collect_data()` first.'
         )
 
-        return len(self.data)
+        bottom, top = self._get_bottom_top_interaction_dates()
 
-    def _validate(self, data: List[str]) -> List[str]:
+        return self.dateutil.get_periods_from(bottom, top, period_type)
+
+    def _validate(self, data: List[List]) -> List[List]:
         """
         Validates downloaded CSV `data` and removes the header's row from it.
 
@@ -182,3 +185,39 @@ class TherapistInteractionsMetabaseOperation:
             )
 
         return data
+
+    def _get_bottom_top_interaction_dates(self) -> Tuple:
+        """
+        Returns tuple of the bottom-top interaction dates.
+        """
+
+        # Assumed the order of the list items is correct
+        # (therapist_id, interaction_date, chat_count, call_count)
+        interation_dates = {
+            parse(list_item[1], yearfirst=True)
+            for list_item in self.data
+        }
+
+        bottom_date = min(interation_dates)
+        top_date = max(interation_dates)
+
+        return (bottom_date, top_date)
+
+    def _filter_data_from(self, start: datetime, end: datetime) -> List[List]:
+        """
+        Filter `self.data` based on the interaction date between `start` and `end` dates.
+
+        TODO: REQUIRE OPTIMIZATION!! SWARM FILTERING IN COMBINATION WITH ASYNC.IO MIGHT BE A GOOD ONE!
+        """
+
+        filtered_items = []
+
+        for list_item in self.data:
+            _, interaction_date_str, _, _ = list_item
+
+            date = parse(interaction_date_str, yearfirst=True)
+
+            if date >= start and date < end:
+                filtered_items.append(list_item)
+
+        return filtered_items
