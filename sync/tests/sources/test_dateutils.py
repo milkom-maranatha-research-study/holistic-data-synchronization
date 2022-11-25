@@ -248,16 +248,3 @@ class TestDateUtil(TestCase):
         )
 
         self.assertEqual(actual, expected)
-
-    def test_parse_datestr(self):
-        """
-        Test the `parse_datestr` method to convert datestring
-        and it must returns a correct date.
-        """
-
-        date_str = '2022/11/02'
-
-        actual = self.util.parse_datestr(date_str)
-        expected = parse('02/11/2022', dayfirst=True)
-
-        self.assertEqual(actual, expected)

@@ -100,11 +100,3 @@ class DateUtil:
         end = start + relativedelta(day=31)
 
         return (start, end)
-
-    def parse_datestr(self, date: str) -> datetime:
-        """
-        Converts that string `date` into `datetime` object.
-        """
-
-        format = "%Y/%m/%d"
-        return datetime.strptime(date, format)
