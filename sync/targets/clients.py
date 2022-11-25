@@ -39,8 +39,8 @@ class BackendAPIClient:
         path = '/auth/login/'
 
         payload = {
-            'username': settings.HOLISTIC_SERVICE_ACCOUNT,
-            'password': settings.HOLISTIC_SERVICE_ACCOUNT_PASSWORD
+            'username': settings.BACKEND_SERVICE_ACCOUNT,
+            'password': settings.BACKEND_SERVICE_ACCOUNT_PASSWORD
         }
 
         response = self._auth_request(method, path, payload=payload)
@@ -97,7 +97,7 @@ class BackendAPIClient:
 
     def _auth_request(self, method, path, payload={}, headers=None) -> requests.Response:
 
-        url = settings.HOLISTIC_BACKEND_URL + path
+        url = settings.BACKEND_URL + path
 
         req_headers = {
             "Accept": "application/json",
@@ -117,7 +117,7 @@ class BackendAPIClient:
 
     def _api_request(self, method, path, payload=None, headers=None) -> requests.Response:
 
-        url = settings.HOLISTIC_BACKEND_URL + path
+        url = settings.BACKEND_URL + path
         req_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
