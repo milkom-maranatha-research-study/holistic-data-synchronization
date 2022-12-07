@@ -5,6 +5,7 @@ from os.path import exists
 from requests.exceptions import HTTPError
 from typing import Union
 
+from helpers import decrypts_text
 from tracers import endpoint_tracer, response_tracer
 
 
@@ -41,8 +42,8 @@ class MetabaseAPIClient:
         path = '/session'
 
         payload = {
-            'username': settings.METABASE_SERVICE_ACCOUNT,
-            'password': settings.METABASE_SERVICE_ACCOUNT_PASSWORD
+            'username': decrypts_text(settings.METABASE_SERVICE_ACCOUNT),
+            'password': decrypts_text(settings.METABASE_SERVICE_ACCOUNT_PASSWORD)
         }
 
         response = self._auth_request(method, path, payload=payload)
