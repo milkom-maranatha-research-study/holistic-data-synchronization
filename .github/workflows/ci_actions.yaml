@@ -17,6 +17,7 @@ jobs:
       - name: Setting up Flake8 Linter
         run: |
           pip install flake8==3.7.9
+          pip install "dask[dataframe]"
       - name: Run Flake8 Linter
         run: |
           flake8 --ignore=E501,E271,E272,W602,W504 --exclude=submodules
