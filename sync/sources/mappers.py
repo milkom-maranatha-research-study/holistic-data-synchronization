@@ -1,17 +1,19 @@
+
+from dask import dataframe as dask_dataframe
 from typing import List, Dict
 
 
 class TherapistOrganizationMapper:
 
-    def to_organization_dictionaries(self, therapist_organization_lists: List[List]) -> List[Dict]:
+    def to_organization_dictionaries(self, org_dataframe: dask_dataframe) -> List[Dict]:
         """
-        Returns list of dictionary that contains unique organization ids
-        from that given `therapist_organization_lists` list.
+        Returns list of the Organization ID dictionary from the given `org_dataframe`.
         """
 
-        org_ids = self._get_organization_ids(therapist_organization_lists)
-
-        return [{'organization_id': org_id} for org_id in org_ids]
+        return [
+            {'organization_id': int(getattr(row, 'organization_id'))}
+            for row in org_dataframe.itertuples()
+        ]
 
     def to_therapist_organization_map(self, therapist_organization_lists: List[List]) -> Dict:
         """
@@ -31,19 +33,6 @@ class TherapistOrganizationMapper:
             ther_org_map[org_id] = therapists
 
         return ther_org_map
-
-    def _get_organization_ids(self, therapist_organization_lists: List[List]) -> set:
-        """
-        Returns unique organization ids from that given `therapist_organization_lists`.
-        """
-
-        org_ids = set()
-
-        for list_item in therapist_organization_lists:
-            _, _, org_id = list_item
-            org_ids.add(org_id)
-
-        return org_ids
 
     def _get_ther_org_dict(self, list_item: str) -> Dict:
         """
