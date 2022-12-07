@@ -20,12 +20,23 @@ class TherapistsOrganizationSync:
     def __init__(self) -> None:
         self.backend_org_operation = OrganizationBackendOperation()
         self.backend_thers_org_operation = TherapistsOrganizationBackendOperation()
-
         self.metabase_operation = TherapistJoiningNicedayMetabaseOperation()
+
+        self._start_sync()
+
+    def _start_sync(self):
+        """
+        Start data synchronization from Metabase to the Backend database
+        """
+
+        # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
+        # Step 2 - Sync Organization data from Metabase to the Backend database
         self._sync_organizations()
-        self._sync_therapists_organization_in_batch()
+
+        # Step 3 - Sync Therapist Organization data from Metabase to the Backend database
+        # self._sync_therapists_organization_in_batch()
 
     def _sync_organizations(self):
         """
@@ -70,11 +81,21 @@ class TherapistInteractionsSync:
 
     def __init__(self) -> None:
         self.backend_therapist_interactions = TherapistInteractionsBackendOperation()
-
         self.metabase_operation = TherapistInteractionsMetabaseOperation()
+
+        self._start_sync()
+    
+    def _start_sync(self):
+        """
+        Start data synchronization from Metabase to the Backend database
+        """
+
+        # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
+        # Step 3 - Sync Therapist Interaction data from Metabase to the Backend database
         self._sync_interactions_of_therapist_in_batch()
+
 
     def _sync_interactions_of_therapist_in_batch(self):
         """
@@ -103,4 +124,4 @@ if __name__ == '__main__':
     configure_logging()
 
     TherapistsOrganizationSync()
-    TherapistInteractionsSync()
+    # TherapistInteractionsSync()
