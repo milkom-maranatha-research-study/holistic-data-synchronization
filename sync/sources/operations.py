@@ -63,40 +63,20 @@ class TherapistJoiningNicedayMetabaseOperation:
 
         return self.mapper.to_organization_dictionaries(org_dataframe)
 
-    def get_therapists_organization_map(self, start: int, end: int) -> Dict:
+    def get_therapists_organization_map(self) -> Dict:
         """
-        Returns chunked of therapists organization data map from the CSV file
-        based on the given `start` and `end` indexes.
+        Returns the therapists organization data map.
+
+        We convert the whole dataframe into a dictionary object
+        because the rows size is still relatively small (it's around ~2K rows).
         """
 
-        assert hasattr(self, 'data'), (
+        assert hasattr(self, '_ddf'), (
             'Unable to perform this action!\n'
             'You must call `.collect_data()` first.'
         )
 
-        data_size = self.get_data_size()
-
-        if data_size == 0:
-            return {}
-
-        start = start if start >= 0 else 0
-        end = end if end < data_size else data_size
-
-        sliced_data = self.data[start:end]
-
-        return self.mapper.to_therapist_organization_map(sliced_data)
-
-    def get_data_size(self) -> int:
-        """
-        Returns the size of data
-        """
-
-        assert hasattr(self, 'data'), (
-            'Unable to perform this action!\n'
-            'You must call `.collect_data()` first.'
-        )
-
-        return len(self.data)
+        return self.mapper.to_therapists_organization_map(self._ddf)
 
 
 class TherapistInteractionsMetabaseOperation:
