@@ -1,6 +1,7 @@
 import logging
 import settings
 
+from dask import dataframe as dask_dataframe
 from datetime import datetime
 from dateutil.parser import parse
 from typing import List, Dict, Tuple
@@ -38,20 +39,29 @@ class TherapistJoiningNicedayMetabaseOperation:
         if not settings.DEV_MODE:
             self.api.download_data(format='csv')
 
-        data = csv_to_list(self.api._THERS_JOINING_ND_FILE)
-        self.data = self._validate(data)
+        self._ddf = dask_dataframe.read_csv(
+            self.api._THERS_JOINING_ND_FILE,
+            dtype={
+                'therapist_id': str,
+                'organization_id': 'Int64',
+                'date_joined': str
+            },
+            parse_dates=['date_joined']
+        )
 
     def get_organizations(self) -> List[Dict]:
         """
         Returns list of the organization dictionaries.
         """
 
-        assert hasattr(self, 'data'), (
+        assert hasattr(self, '_ddf'), (
             'Unable to perform this action!\n'
             'You must call `.collect_data()` first.'
         )
 
-        return self.mapper.to_organization_dictionaries(self.data)
+        org_dataframe = self._ddf[['organization_id']].drop_duplicates().compute()
+
+        return self.mapper.to_organization_dictionaries(org_dataframe)
 
     def get_therapists_organization_map(self, start: int, end: int) -> Dict:
         """
@@ -87,28 +97,6 @@ class TherapistJoiningNicedayMetabaseOperation:
         )
 
         return len(self.data)
-
-    def _validate(self, data: List[List]) -> List[List]:
-        """
-        Validates downloaded CSV `data` and removes the header's row from it.
-
-        Returns the validated CSV data.
-        """
-
-        if len(data) < 1:
-            raise ValueError(
-                {self.api._THERS_JOINING_ND_FILE: 'The CSV File is empty or invalid.'}
-            )
-
-        headers = data.pop(0)
-        expected_headers = ['date_joined', 'therapist_id', 'organization_id']
-
-        if set(headers) != set(expected_headers):
-            raise ValueError(
-                {self.api._THERS_JOINING_ND_FILE: 'The headers of CSV File has changed!'}
-            )
-
-        return data
 
 
 class TherapistInteractionsMetabaseOperation:
