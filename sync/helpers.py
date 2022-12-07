@@ -1,6 +1,9 @@
 import logging
 
+from cryptography.fernet import Fernet
 from datetime import datetime
+
+from settings import SECRET_KEY
 
 
 logger = logging.getLogger(__name__)
@@ -20,4 +23,23 @@ def print_time_duration(tag: str, start: datetime, end: datetime):
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
 
-    logger.info(f"{tag} is completed in {hours}:{minutes}:{seconds}")
+    duration_msg = ''
+
+    if hours > 0:
+        duration_msg += f'{hours} hour(s), '
+
+    if minutes > 0:
+        duration_msg += f'{minutes} minute(s), '
+
+    if seconds > 0:
+        duration_msg += f'{seconds} second(s)'
+
+    logger.info(f" {tag} is completed in: {duration_msg}")
+
+
+def decrypts_text(encrypted_text):
+    """
+    Decrypts an encrypted text
+    """
+    fernet = Fernet(SECRET_KEY)
+    return fernet.decrypt(encrypted_text).decode('ascii')
