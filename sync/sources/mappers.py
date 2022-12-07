@@ -56,24 +56,24 @@ class TherapistOrganizationMapper:
 
 class TherapistInteractionsMapper:
 
-    def to_therapist_interaction_map(self, therapist_interaction_lists: List[List]) -> Dict:
+    def to_therapist_interaction_map(self, dataframe: dask_dataframe) -> Dict:
         """
-        Returns a map of interactions therapist from that given `therapist_interaction_lists`.
+        Returns a map of interactions therapist from that given `dataframe`.
         """
 
-        interaction_map = self._group_by_therapist_and_interaction_date(therapist_interaction_lists)
+        interaction_map = self._group_by_therapist_and_interaction_date(dataframe)
         return self._group_by_therapist(interaction_map)
 
-    def _group_by_therapist_and_interaction_date(self, therapist_interaction_lists: List[List]) -> Dict:
+    def _group_by_therapist_and_interaction_date(self, dataframe: dask_dataframe) -> Dict:
         """
         Returns a map of interactions therapist grouped by `therapist_id` and `interaction_date`
-        from that given `therapist_interaction_lists`.
+        from that given `dataframe`.
         """
 
         interaction_map = {}
 
-        for list_item in therapist_interaction_lists:
-            interaction = self._get_interaction_dict(list_item)
+        for row in dataframe.itertuples():
+            interaction = self._get_interaction_dict(row)
 
             key = f"{interaction.pop('therapist_id')}#{interaction['interaction_date']}"
 
@@ -109,16 +109,14 @@ class TherapistInteractionsMapper:
 
         return interaction_map
 
-    def _get_interaction_dict(self, list_item: str) -> Dict:
+    def _get_interaction_dict(self, row: Tuple[str, Series]) -> Dict:
         """
-        Converts the given `list_item` into a dictionary and then return it.
+        Converts the given `row` into a dictionary and then return it.
         """
-
-        therapist_id, interaction_date, chat_count, call_count = list_item
 
         return {
-            'therapist_id': therapist_id,
-            'interaction_date': interaction_date,
-            'chat_count': chat_count,
-            'call_count': call_count
+            'therapist_id': getattr(row, 'therapist_id'),
+            'interaction_date': getattr(row, 'interaction_date').strftime("%Y-%m-%d"),
+            'chat_count': int(getattr(row, 'therapist_chat_count')),
+            'call_count': int(getattr(row, 'call_count'))
         }
