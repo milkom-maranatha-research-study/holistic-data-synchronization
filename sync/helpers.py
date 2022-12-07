@@ -6,7 +6,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
-def print_time_duration(tag: str, start: datetime,  end: datetime):
+def print_time_duration(tag: str, start: datetime, end: datetime):
     """
     Print out time duration between two dates.
     """
