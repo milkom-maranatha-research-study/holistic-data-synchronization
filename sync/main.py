@@ -36,11 +36,11 @@ class TherapistsOrganizationSync:
         self._sync_organizations()
 
         # Step 3 - Sync Therapist Organization data from Metabase to the Backend database
-        # self._sync_therapists_organization_in_batch()
+        self._sync_therapists_organization()
 
     def _sync_organizations(self):
         """
-        Runs full synchronization of the Organization objects.
+        Synchronize the Organization objects.
         """
 
         logger.info("Retrieving Organization objects from Metabase data...")
@@ -49,32 +49,17 @@ class TherapistsOrganizationSync:
         logger.info("Upserting Organization objects in the Backend...")
         self.backend_org_operation.upsert(organizations)
 
-    def _sync_therapists_organization_in_batch(self):
+    def _sync_therapists_organization(self):
         """
-        Runs batch synchronization for every Therapists in the Organization.
+        Synchronize every Therapists in the Organization.
         """
 
-        logger.info("Calculating batch sizing for sync...")
+        logger.info("Retrieving Therapists Organization objects from Metabase data...")
+        therapists_org_map = self.metabase_operation.get_therapists_organization_map()
 
-        size = self.metabase_operation.get_data_size()
-        num_items_per_batch = 1000
-        batch_size = size // num_items_per_batch + 1  # Ignores remainder
-
-        start = 0
-
-        for iteration in range(0, batch_size):
-            tag = f"Batch {iteration + 1}"
-
-            end = (iteration + 1) * num_items_per_batch
-
-            logger.info(f"{tag} - Retrieving Therapists Organization objects from Metabase data...")
-            therapists_org_map = self.metabase_operation.get_therapists_organization_map(start, end)
-
-            logger.info(f"{tag} - Upserting every Therapists Organization object in the Backend...")
-            for org_id, therapists in therapists_org_map.items():
-                self.backend_thers_org_operation.upsert(org_id, therapists)
-
-            start = end
+        logger.info("Upserting every Therapists Organization object in the Backend...")
+        for org_id, therapists in therapists_org_map.items():
+            self.backend_thers_org_operation.upsert(org_id, therapists)
 
 
 class TherapistInteractionsSync:
