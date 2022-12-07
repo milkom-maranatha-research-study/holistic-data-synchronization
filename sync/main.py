@@ -78,13 +78,12 @@ class TherapistInteractionsSync:
         # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
-        # Step 3 - Sync Therapist Interaction data from Metabase to the Backend database
-        self._sync_interactions_of_therapist_in_batch()
+        # Step 2 - Sync Therapist Interaction data from Metabase to the Backend database
+        self._sync_interactions_of_therapist()
 
-
-    def _sync_interactions_of_therapist_in_batch(self):
+    def _sync_interactions_of_therapist(self):
         """
-        Runs batch synchronization for every Therapist Interactions per month.
+        Synchronize every Therapist Interactions in monthly requests.
         """
 
         logger.info("Calculating time periods for sync...")
@@ -109,4 +108,4 @@ if __name__ == '__main__':
     configure_logging()
 
     TherapistsOrganizationSync()
-    # TherapistInteractionsSync()
+    TherapistInteractionsSync()
