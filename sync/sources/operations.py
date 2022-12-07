@@ -59,6 +59,7 @@ class TherapistJoiningNicedayMetabaseOperation:
             'You must call `.collect_data()` first.'
         )
 
+        # Selects only the `organization_id` and distinct it.
         org_dataframe = self._ddf[['organization_id']].drop_duplicates().compute()
 
         return self.mapper.to_organization_dictionaries(org_dataframe)
@@ -98,10 +99,16 @@ class TherapistInteractionsMetabaseOperation:
         if not settings.DEV_MODE:
             self.api.download_data(format='csv')
 
-        data = csv_to_list(self.api._THER_INTERACTIONS_FILE)
-        self.data = self._validate(data)
-
-        self.top_bottom_dates = self._get_bottom_top_interaction_dates()
+        self._ddf = dask_dataframe.read_csv(
+            self.api._THER_INTERACTIONS_FILE,
+            dtype={
+                'therapist_id': str,
+                'interaction_date': str,
+                'therapist_chat_count': 'Int64',
+                'call_count': 'Int64'
+            },
+            parse_dates=['interaction_date']
+        )
 
     def get_interactions_therapist_map(self, start: datetime, end: datetime) -> Dict:
         """
@@ -109,102 +116,37 @@ class TherapistInteractionsMetabaseOperation:
         based on the given `start` and `end` dates.
         """
 
-        assert hasattr(self, 'data'), (
+        assert hasattr(self, '_ddf'), (
             'Unable to perform this action!\n'
             'You must call `.collect_data()` first.'
         )
 
-        sliced_data = self._filter_data_from(start, end)
+        # Filters the dataframe where interaction date is between the given `start` and `end` dates.
+        sliced_dataframe = self._ddf[
+            (self._ddf['interaction_date'] >= start) & (self._ddf['interaction_date'] <= end)
+        ]
 
-        return self.mapper.to_therapist_interaction_map(sliced_data)
+        return self.mapper.to_therapist_interaction_map(sliced_dataframe)
 
     def get_interaction_date_periods(self, period_type: str) -> List[Tuple]:
         """
-        Extracts and return a list of interaction date periods from the `self.data`
+        Extracts and return a list of interaction date periods from the `self._ddf`
         with that specific `period_type`.
 
         Acceptable period type is either `'weekly'` or `'monthly'`.
         """
 
-        assert hasattr(self, 'data'), (
+        assert hasattr(self, '_ddf'), (
             'Unable to perform this action!\n'
             'You must call `.collect_data()` first.'
         )
 
-        bottom, top = self._get_bottom_top_interaction_dates()
+        panda_min_obj, panda_max_obj = dask_dataframe.compute(
+            self._ddf[['interaction_date']].min(),
+            self._ddf[['interaction_date']].max()
+        )
 
-        return self.dateutil.get_periods_from(bottom, top, period_type)
+        min_date = panda_min_obj['interaction_date'].to_pydatetime()
+        max_date = panda_max_obj['interaction_date'].to_pydatetime()
 
-    def _validate(self, data: List[List]) -> List[List]:
-        """
-        Validates downloaded CSV `data` and removes the header's row from it.
-
-        Returns the validated CSV data.
-        """
-
-        if len(data) < 1:
-            raise ValueError(
-                {self.api._THER_INTERACTIONS_FILE: 'The CSV File is empty or invalid.'}
-            )
-
-        headers = data.pop(0)
-        expected_headers = ['therapist_id', 'interaction_date', 'therapist_chat_count', 'call_count']
-
-        if set(headers) != set(expected_headers):
-            raise ValueError(
-                {self.api._THER_INTERACTIONS_FILE: 'The headers of CSV File has changed!'}
-            )
-
-        return data
-
-    def _get_bottom_top_interaction_dates(self) -> Tuple:
-        """
-        Returns tuple of the bottom-top interaction dates.
-        """
-        bottom_date = None
-        top_date = None
-
-        # Assumed the order of the list items is correct
-        # (therapist_id, interaction_date, chat_count, call_count)
-        for list_item in self.data:
-            date = parse(list_item[1], yearfirst=True)
-
-            # Bottom-top interaction dates initialization
-            if bottom_date is None and top_date is None:
-
-                bottom_date = date
-                top_date = date
-
-                continue
-
-            # If incoming `date` is less than bottom date,
-            # replace current bottom date with it.
-            if date < bottom_date:
-                bottom_date = date
-
-            # If incoming `date` is greater than top date,
-            # replace current top date with it.
-            if date > top_date:
-                top_date = date
-
-        return (bottom_date, top_date)
-
-    def _filter_data_from(self, start: datetime, end: datetime) -> List[List]:
-        """
-        Filter `self.data` based on the interaction date between `start` and `end` dates.
-
-        TODO: REQUIRE OPTIMIZATION!! SWARM FILTERING IN COMBINATION WITH ASYNC.IO MIGHT BE A GOOD ONE!
-        """
-
-        filtered_items = []
-
-        # Assumed the order of the list items is correct
-        # (therapist_id, interaction_date, chat_count, call_count)
-        for list_item in self.data:
-
-            date = parse(list_item[1], yearfirst=True)
-
-            if date >= start and date <= end:
-                filtered_items.append(list_item)
-
-        return filtered_items
+        return self.dateutil.get_periods_from(min_date, max_date, period_type)
