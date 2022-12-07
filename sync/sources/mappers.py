@@ -34,7 +34,7 @@ class TherapistOrganizationMapper:
             # * Get the list of therapists belonging to that Organization ID
             # * If no therapists are associated with it, use empty list.
             therapists = thers_org_map.get(org_id, [])
-            
+
             # * Append the therapist dictionary into the list
             therapists.append(ther_dict)
 

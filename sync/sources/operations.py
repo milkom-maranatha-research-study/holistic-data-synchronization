@@ -3,14 +3,12 @@ import settings
 
 from dask import dataframe as dask_dataframe
 from datetime import datetime
-from dateutil.parser import parse
 from typing import List, Dict, Tuple
 
 from sources.clients import (
     TherapistJoiningNicedayAPI,
     TherapistInteractionAPI
 )
-from sources.helpers import csv_to_list
 from sources.mappers import (
     TherapistOrganizationMapper,
     TherapistInteractionsMapper
