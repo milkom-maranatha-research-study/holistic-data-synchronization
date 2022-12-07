@@ -2,8 +2,9 @@ import os
 import logging
 
 
-DEV_MODE = os.environ.get('DEV_MODE', True)
+DEV_MODE = os.environ.get('DEV_MODE', False)
 DEBUG_MODE = os.environ.get('DEBUG_MODE', True)
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # Metabase API
 METABASE_URL = os.environ.get('METABASE_URL', '')
