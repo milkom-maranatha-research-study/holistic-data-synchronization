@@ -1,5 +1,8 @@
 import logging
 
+from datetime import datetime
+
+from helpers import print_time_duration
 from settings import configure_logging
 from sources.operations import (
     TherapistJoiningNicedayMetabaseOperation,
@@ -29,6 +32,8 @@ class TherapistsOrganizationSync:
         Start data synchronization from Metabase to the Backend database
         """
 
+        start_time = datetime.now()
+
         # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
@@ -37,6 +42,10 @@ class TherapistsOrganizationSync:
 
         # Step 3 - Sync Therapist Organization data from Metabase to the Backend database
         self._sync_therapists_organization()
+
+        end_time = datetime.now()
+
+        print_time_duration('Sync Therapists Organization', start_time, end_time)
 
     def _sync_organizations(self):
         """
@@ -69,17 +78,23 @@ class TherapistInteractionsSync:
         self.metabase_operation = TherapistInteractionsMetabaseOperation()
 
         self._start_sync()
-    
+
     def _start_sync(self):
         """
         Start data synchronization from Metabase to the Backend database
         """
+
+        start_time = datetime.now()
 
         # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
         # Step 2 - Sync Therapist Interaction data from Metabase to the Backend database
         self._sync_interactions_of_therapist()
+
+        end_time = datetime.now()
+
+        print_time_duration('Sync Therapists Organization', start_time, end_time)
 
     def _sync_interactions_of_therapist(self):
         """
