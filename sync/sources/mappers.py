@@ -1,46 +1,57 @@
 
 from dask import dataframe as dask_dataframe
-from typing import List, Dict
+from dask.dataframe import Series
+from typing import Dict, List, Tuple
 
 
 class TherapistOrganizationMapper:
 
-    def to_organization_dictionaries(self, org_dataframe: dask_dataframe) -> List[Dict]:
+    def to_organization_dictionaries(self, dataframe: dask_dataframe) -> List[Dict]:
         """
-        Returns list of the Organization ID dictionary from the given `org_dataframe`.
+        Returns list of the Organization ID dictionary from the given `dataframe`.
         """
 
         return [
             {'organization_id': int(getattr(row, 'organization_id'))}
-            for row in org_dataframe.itertuples()
+            for row in dataframe.itertuples()
         ]
 
-    def to_therapist_organization_map(self, therapist_organization_lists: List[List]) -> Dict:
+    def to_therapists_organization_map(self, dataframe: dask_dataframe) -> Dict:
         """
-        Returns a map of therapists organization from that given `therapist_organization_lists`.
-        """
-
-        ther_org_map = {}
-
-        for list_item in therapist_organization_lists:
-            ther_org = self._get_ther_org_dict(list_item)
-
-            org_id = ther_org.pop('organization_id')
-
-            therapists = ther_org_map.get(org_id, [])
-            therapists.append(ther_org)
-
-            ther_org_map[org_id] = therapists
-
-        return ther_org_map
-
-    def _get_ther_org_dict(self, list_item: str) -> Dict:
-        """
-        Converts the given `list_item` into a dictionary and then return it.
+        Returns a map of the therapists organization from that given `dataframe`.
         """
 
-        date_joined, therapist_id, org_id = list_item
-        return {'date_joined': date_joined, 'therapist_id': therapist_id, 'organization_id': org_id}
+        thers_org_map = {}
+
+        for row in dataframe.itertuples():
+            # Convert row into a dictionary
+            ther_dict = self._get_therapist_dict(row)
+
+            # Construct a dictionary of {[org_id]: [therapists]}
+            # * Get and removes the Organization ID from the dictionary
+            org_id = ther_dict.pop('organization_id')
+
+            # * Get the list of therapists belonging to that Organization ID
+            # * If no therapists are associated with it, use empty list.
+            therapists = thers_org_map.get(org_id, [])
+            
+            # * Append the therapist dictionary into the list
+            therapists.append(ther_dict)
+
+            # * Update Organization ID therapists
+            thers_org_map[org_id] = therapists
+
+        return thers_org_map
+
+    def _get_therapist_dict(self, row: Tuple[str, Series]) -> Dict:
+        """
+        Converts the given `row` into a dictionary and then return it.
+        """
+        return {
+            'date_joined': getattr(row, 'date_joined').strftime("%Y-%m-%d"),
+            'therapist_id': getattr(row, 'therapist_id'),
+            'organization_id': int(getattr(row, 'organization_id'))
+        }
 
 
 class TherapistInteractionsMapper:
