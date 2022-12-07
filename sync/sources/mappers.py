@@ -73,20 +73,27 @@ class TherapistInteractionsMapper:
         interaction_map = {}
 
         for row in dataframe.itertuples():
+            # Convert row into a dictionary
             interaction = self._get_interaction_dict(row)
 
+            # Construct a dictionary of {[therapist_id#interaction_date]: [interactions]}
+            # * Create a dictionary's key
             key = f"{interaction.pop('therapist_id')}#{interaction['interaction_date']}"
 
+            # * Get the list of interactions belonging to that key
+            # * If no interactions are associated with it, use empty list.
             interactions = interaction_map.get(key, [])
 
-            # Every therapist can have multiple interactions on the same date.
-            # It means they are treating multiple clients on the same day.
-            # However, since we don't have any information about the client,
-            # we put an auto-increment id to indicate that every interaction on the same day is unique.
+            # * Every therapist can have multiple interactions on the same date.
+            # * It means they are treating multiple clients on the same day.
+            # * However, since we don't have any information about the client,
+            # * we put an auto-increment id to indicate that every interaction on the same day is unique.
             interaction['interaction_id'] = len(interactions) + 1
 
+            # * Append the updated dictionary of interaction into the interaction list
             interactions.append(interaction)
 
+            # * Update interaction map with interactions
             interaction_map[key] = interactions
 
         return interaction_map
@@ -100,11 +107,18 @@ class TherapistInteractionsMapper:
         interaction_map = {}
 
         for key, values in therapist_interaction_date_map.items():
+            # Get Therapist ID
             ther_id, _ = key.split('#')
 
+            # Construct a dictionary of {[therapist_id]: [interactions]} for accumulating the interaction list
+            # * Get the list of interactions belonging to that key
+            # * If no interactions are associated with it, use empty list.
             interactions = interaction_map.get(ther_id, [])
+
+            # * Extends the interaction list with the interaction values
             interactions.extend(values)
 
+            # * Update interaction map with extended interactions
             interaction_map[ther_id] = interactions
 
         return interaction_map

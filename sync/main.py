@@ -94,7 +94,7 @@ class TherapistInteractionsSync:
 
         end_time = datetime.now()
 
-        print_time_duration('Sync Therapists Organization', start_time, end_time)
+        print_time_duration('Sync Therapist Interactions', start_time, end_time)
 
     def _sync_interactions_of_therapist(self):
         """
