@@ -2,8 +2,8 @@ import os
 import logging
 
 
-DEV_MODE = os.environ.get('DEV_MODE', False)
-DEBUG_MODE = os.environ.get('DEBUG_MODE', True)
+DEV_MODE = bool(os.environ.get('DEV_MODE', True))
+DEBUG_MODE = bool(os.environ.get('DEBUG_MODE', True))
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # Metabase API

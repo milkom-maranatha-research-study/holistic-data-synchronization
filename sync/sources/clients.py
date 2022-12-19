@@ -12,6 +12,10 @@ from tracers import endpoint_tracer, response_tracer
 class MetabaseAPIClient:
 
     def __init__(self):
+        # When running `sync` service in a development mode, it won't require Metabase access token
+        # because we will use downloaded Metabase data from `.csv` files.
+        if settings.DEV_MODE:
+            return
 
         self._METABASE_URL_API = settings.METABASE_URL + '/api'
 
