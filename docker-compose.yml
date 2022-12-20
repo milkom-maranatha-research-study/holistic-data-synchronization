@@ -4,11 +4,18 @@ services:
   sync:
     build: .
     volumes:
-     - .:/holistic-data-sync
+      - .:/holistic-data-sync
     ports:
-     - 8001:8001
+      - 8001:8001
+    networks:
+      - holistic-net
     env_file:
-      - .env.example
+      - .env
     stdin_open: true
     tty: true
     command: ./sync.sh locally
+
+networks:
+  holistic-net:
+    name: holistic-net
+    external: true
