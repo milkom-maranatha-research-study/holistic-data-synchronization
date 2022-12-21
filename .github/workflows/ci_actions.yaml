@@ -9,7 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker Container
-        run: docker-compose up --build -d sync
+        run: |
+          docker network create holistic-net
+          docker-compose up --build -d sync
       - name: Setting up Python
         uses: actions/setup-python@v3
         with:
