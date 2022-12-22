@@ -240,15 +240,15 @@ class TestTherapistInteractionsMapper(TestCase):
 
         expected = {
             't1': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
         actual = self.mapper.to_therapist_interaction_map(dataframe)
@@ -276,15 +276,15 @@ class TestTherapistInteractionsMapper(TestCase):
 
         expected = {
             't1': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
         actual = self.mapper.to_therapist_interaction_map(dataframe)
@@ -332,17 +332,17 @@ class TestTherapistInteractionsMapper(TestCase):
 
         expected = {
             't1#2021-01-28': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1}
             ],
             't1#2021-02-03': [
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2#2021-03-14': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3#2021-04-05': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
         actual = self.mapper._group_by_therapist_and_interaction_date(dataframe)
@@ -370,17 +370,17 @@ class TestTherapistInteractionsMapper(TestCase):
 
         expected = {
             't1#2021-01-28': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1}
             ],
             't1#2021-02-03': [
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2#2021-03-14': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3#2021-04-05': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
         actual = self.mapper._group_by_therapist_and_interaction_date(dataframe)
@@ -415,31 +415,31 @@ class TestTherapistInteractionsMapper(TestCase):
 
         ther_interaction_date_map = {
             't1#2021-01-28': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1}
             ],
             't1#2021-02-03': [
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2#2021-03-14': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3#2021-04-05': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
 
         expected = {
             't1': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
         actual = self.mapper._group_by_therapist(ther_interaction_date_map)
@@ -453,17 +453,17 @@ class TestTherapistInteractionsMapper(TestCase):
 
         ther_interaction_date_map = {
             'invalid_key': [
-                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1}
+                {'interaction_date': '2021-01-28', 'chat_count': 1, 'call_count': 1, 'counter': 1}
             ],
             't1#2021-02-03': [
-                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'interaction_id': 1}
+                {'interaction_date': '2021-02-03', 'chat_count': 1, 'call_count': 2, 'counter': 1}
             ],
             't2#2021-03-14': [
-                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'interaction_id': 1},
+                {'interaction_date': '2021-03-14', 'chat_count': 0, 'call_count': 1, 'counter': 1},
             ],
             't3#2021-04-05': [
-                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'interaction_id': 1},
-                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'interaction_id': 2}
+                {'interaction_date': '2021-04-05', 'chat_count': 1, 'call_count': 1, 'counter': 1},
+                {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
 

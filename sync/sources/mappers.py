@@ -88,7 +88,7 @@ class TherapistInteractionsMapper:
             # * It means they are treating multiple clients on the same day.
             # * However, since we don't have any information about the client,
             # * we put an auto-increment id to indicate that every interaction on the same day is unique.
-            interaction['interaction_id'] = len(interactions) + 1
+            interaction['counter'] = len(interactions) + 1
 
             # * Append the updated dictionary of interaction into the interaction list
             interactions.append(interaction)
