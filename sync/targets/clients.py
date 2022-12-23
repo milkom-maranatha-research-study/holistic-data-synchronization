@@ -150,7 +150,7 @@ class OrganizationAPI(BackendAPIClient):
         return response.json()
 
 
-class TherapistOrganizationAPI(BackendAPIClient):
+class TherapistAPI(BackendAPIClient):
 
     def upsert(self, org_id: int, therapists: List[Dict]) -> Dict:
         """
@@ -165,7 +165,7 @@ class TherapistOrganizationAPI(BackendAPIClient):
         return response.json()
 
 
-class TherapistInteractionAPI(BackendAPIClient):
+class InteractionAPI(BackendAPIClient):
 
     def upsert(self, ther_id: str, interactions: List[Dict]) -> Dict:
         """

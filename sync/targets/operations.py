@@ -2,8 +2,8 @@ from typing import List, Dict
 
 from targets.clients import (
     OrganizationAPI,
-    TherapistOrganizationAPI,
-    TherapistInteractionAPI
+    TherapistAPI,
+    InteractionAPI
 )
 
 
@@ -20,10 +20,10 @@ class OrganizationBackendOperation:
         return self.api.upsert(organizations)
 
 
-class TherapistsOrganizationBackendOperation:
+class TherapistBackendOperation:
 
     def __init__(self) -> None:
-        self.api = TherapistOrganizationAPI()
+        self.api = TherapistAPI()
 
     def upsert(self, org_id: int, therapists: List[Dict]) -> Dict:
         """
@@ -33,10 +33,10 @@ class TherapistsOrganizationBackendOperation:
         return self.api.upsert(org_id, therapists)
 
 
-class TherapistInteractionsBackendOperation:
+class InteractionBackendOperation:
 
     def __init__(self) -> None:
-        self.api = TherapistInteractionAPI()
+        self.api = InteractionAPI()
 
     def upsert(self, ther_id: str, interactions: List[Dict]) -> Dict:
         """

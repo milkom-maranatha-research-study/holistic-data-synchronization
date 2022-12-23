@@ -10,19 +10,19 @@ from sources.operations import (
 )
 from targets.operations import (
     OrganizationBackendOperation,
-    TherapistsOrganizationBackendOperation,
-    TherapistInteractionsBackendOperation
+    TherapistBackendOperation,
+    InteractionBackendOperation
 )
 
 
 logger = logging.getLogger(__name__)
 
 
-class TherapistsOrganizationSync:
+class TherapistSynchronizer:
 
     def __init__(self) -> None:
         self.backend_org_operation = OrganizationBackendOperation()
-        self.backend_thers_org_operation = TherapistsOrganizationBackendOperation()
+        self.backend_therapist_operation = TherapistBackendOperation()
         self.metabase_operation = TherapistJoiningNicedayMetabaseOperation()
 
         self._start_sync()
@@ -40,12 +40,12 @@ class TherapistsOrganizationSync:
         # Step 2 - Sync Organization data from Metabase to the Backend database
         self._sync_organizations()
 
-        # Step 3 - Sync Therapist Organization data from Metabase to the Backend database
-        self._sync_therapists_organization()
+        # Step 3 - Sync Therapist data from Metabase to the Backend database
+        self._sync_therapists()
 
         end_time = datetime.now()
 
-        print_time_duration('Sync Therapists Organization', start_time, end_time)
+        print_time_duration('Sync Therapist and its Organization', start_time, end_time)
 
     def _sync_organizations(self):
         """
@@ -58,23 +58,23 @@ class TherapistsOrganizationSync:
         logger.info("Upserting Organization objects in the Backend...")
         self.backend_org_operation.upsert(organizations)
 
-    def _sync_therapists_organization(self):
+    def _sync_therapists(self):
         """
         Synchronize every Therapists in the Organization.
         """
 
-        logger.info("Retrieving Therapists Organization objects from Metabase data...")
+        logger.info("Retrieving Therapists objects from Metabase data...")
         therapists_org_map = self.metabase_operation.get_therapists_organization_map()
 
-        logger.info("Upserting every Therapists Organization object in the Backend...")
+        logger.info("Upserting every Therapists object in the Backend...")
         for org_id, therapists in therapists_org_map.items():
-            self.backend_thers_org_operation.upsert(org_id, therapists)
+            self.backend_therapist_operation.upsert(org_id, therapists)
 
 
-class TherapistInteractionsSync:
+class InteractionSynchronizer:
 
     def __init__(self) -> None:
-        self.backend_therapist_interactions = TherapistInteractionsBackendOperation()
+        self.backend_interaction_operation = InteractionBackendOperation()
         self.metabase_operation = TherapistInteractionsMetabaseOperation()
 
         self._start_sync()
@@ -89,14 +89,14 @@ class TherapistInteractionsSync:
         # Step 1 - Collect data from Metabase
         self.metabase_operation.collect_data()
 
-        # Step 2 - Sync Therapist Interaction data from Metabase to the Backend database
-        self._sync_interactions_of_therapist()
+        # Step 2 - Sync Therapist Interactions from Metabase to the Backend database
+        self._sync_interactions()
 
         end_time = datetime.now()
 
         print_time_duration('Sync Therapist Interactions', start_time, end_time)
 
-    def _sync_interactions_of_therapist(self):
+    def _sync_interactions(self):
         """
         Synchronize every Therapist Interactions in monthly requests.
         """
@@ -114,7 +114,7 @@ class TherapistInteractionsSync:
 
             logger.info(f"{tag} - Upserting every Therapist Interactions object in the Backend...")
             for ther_id, interactions in interactions_ther_map.items():
-                self.backend_therapist_interactions.upsert(ther_id, interactions)
+                self.backend_interaction_operation.upsert(ther_id, interactions)
 
             start = end
 
@@ -122,5 +122,5 @@ class TherapistInteractionsSync:
 if __name__ == '__main__':
     configure_logging()
 
-    TherapistsOrganizationSync()
-    TherapistInteractionsSync()
+    TherapistSynchronizer()
+    InteractionSynchronizer()
