@@ -139,12 +139,12 @@ class TherapistInteractionsMetabaseOperation:
             'You must call `.collect_data()` first.'
         )
 
-        panda_min_obj, panda_max_obj = dask_dataframe.compute(
+        df_min_obj, df_max_obj = dask_dataframe.compute(
             self._ddf[['interaction_date']].min(),
             self._ddf[['interaction_date']].max()
         )
 
-        min_date = panda_min_obj['interaction_date'].to_pydatetime()
-        max_date = panda_max_obj['interaction_date'].to_pydatetime()
+        min_date = df_min_obj['interaction_date'].to_pydatetime()
+        max_date = df_max_obj['interaction_date'].to_pydatetime()
 
         return self.dateutil.get_periods_from(min_date, max_date, period_type)
