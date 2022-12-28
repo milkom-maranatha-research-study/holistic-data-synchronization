@@ -173,7 +173,7 @@ class InteractionAPI(BackendAPIClient):
         """
 
         method = 'POST'
-        path = f'/sync/organizations/therapists/{ther_id}/interactions/'
+        path = f'/sync/therapists/{ther_id}/interactions/'
 
         response = self._api_request(method, path, interactions)
 
