@@ -2,10 +2,10 @@
 
 RUN_LOCALLY="$1"
 
-if [[ $RUN_LOCALLY =~ ^(locally)$ ]]; then
-    # Load dot env for the processor app
-    . .env
+# Load dot env for the processor app
+. .env
 
+if [[ $RUN_LOCALLY =~ ^(locally)$ ]]; then
     # Overrides BACKEND_URL
     export BACKEND_URL=http://localhost:8080
 
