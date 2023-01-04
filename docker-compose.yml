@@ -13,7 +13,7 @@ services:
       - .env.example
     stdin_open: true
     tty: true
-    command: ./sync.sh locally
+    command: ./sync.sh
 
 networks:
   holistic-net:
