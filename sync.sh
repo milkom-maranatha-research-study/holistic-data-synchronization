@@ -2,7 +2,7 @@
 
 RUN_LOCALLY="$1"
 
-# Load dot env for the processor app
+# Load dot env for sync service module
 . .env
 
 if [[ $RUN_LOCALLY =~ ^(locally)$ ]]; then
