@@ -6,12 +6,12 @@ from datetime import datetime
 from typing import List, Dict, Tuple
 
 from sources.clients import (
-    TherapistJoiningNicedayAPI,
-    TherapistInteractionAPI
+    TherapistAPI,
+    InteractionAPI
 )
 from sources.mappers import (
-    TherapistOrganizationMapper,
-    TherapistInteractionsMapper
+    TherapistMapper,
+    InteractionMapper
 )
 from sources.dateutils import DateUtil
 
@@ -19,11 +19,24 @@ from sources.dateutils import DateUtil
 logger = logging.getLogger(__name__)
 
 
-class TherapistJoiningNicedayMetabaseOperation:
-    mapper = TherapistOrganizationMapper()
+class TherapistMetabaseOperation:
+    mapper = TherapistMapper()
 
     def __init__(self) -> None:
-        self.api = TherapistJoiningNicedayAPI()
+        self.api = TherapistAPI()
+
+    @property
+    def data(self) -> dask_dataframe:
+        """
+        Returns the Therapist dask's dataframe.
+        """
+
+        assert hasattr(self, '_ddf'), (
+            'Dask dataframe is not available!\n'
+            'You must call `.collect_data()` first.'
+        )
+
+        return self._ddf
 
     def collect_data(self) -> None:
         """
@@ -60,9 +73,9 @@ class TherapistJoiningNicedayMetabaseOperation:
         # Selects only the `organization_id` and distinct it.
         org_dataframe = self._ddf[['organization_id']].drop_duplicates().compute()
 
-        return self.mapper.to_organization_dictionaries(org_dataframe)
+        return self.mapper.to_organizations(org_dataframe)
 
-    def get_therapists_organization_map(self) -> Dict:
+    def get_organization_therapists_map(self) -> Dict:
         """
         Returns the therapists organization data map.
 
@@ -75,15 +88,28 @@ class TherapistJoiningNicedayMetabaseOperation:
             'You must call `.collect_data()` first.'
         )
 
-        return self.mapper.to_therapists_organization_map(self._ddf)
+        return self.mapper.to_organization_therapists_map(self._ddf)
 
 
-class TherapistInteractionsMetabaseOperation:
-    mapper = TherapistInteractionsMapper()
+class InteractionMetabaseOperation:
+    mapper = InteractionMapper()
     dateutil = DateUtil()
 
     def __init__(self) -> None:
-        self.api = TherapistInteractionAPI()
+        self.api = InteractionAPI()
+
+    @property
+    def data(self) -> dask_dataframe:
+        """
+        Returns the Interaction dask's dataframe.
+        """
+
+        assert hasattr(self, '_ddf'), (
+            'Dask dataframe is not available!\n'
+            'You must call `.collect_data()` first.'
+        )
+
+        return self._ddf
 
     def collect_data(self) -> None:
         """
@@ -108,7 +134,7 @@ class TherapistInteractionsMetabaseOperation:
             parse_dates=['interaction_date']
         )
 
-    def get_interactions_therapist_map(self, start: datetime, end: datetime) -> Dict:
+    def get_therapist_interactions_map(self, start: datetime, end: datetime) -> Dict:
         """
         Returns chunked of therapist interactions data map from the CSV file
         based on the given `start` and `end` dates.
@@ -124,7 +150,7 @@ class TherapistInteractionsMetabaseOperation:
             (self._ddf['interaction_date'] >= start) & (self._ddf['interaction_date'] <= end)
         ]
 
-        return self.mapper.to_therapist_interaction_map(sliced_dataframe)
+        return self.mapper.to_therapist_interactions_map(sliced_dataframe)
 
     def get_interaction_date_periods(self, period_type: str) -> List[Tuple]:
         """

@@ -164,7 +164,7 @@ class MetabaseAPIClient:
                     file.write(chunk)
 
 
-class TherapistJoiningNicedayAPI(MetabaseAPIClient):
+class TherapistAPI(MetabaseAPIClient):
 
     def __init__(self) -> None:
         super().__init__()
@@ -184,7 +184,7 @@ class TherapistJoiningNicedayAPI(MetabaseAPIClient):
         self._download(self._THERS_JOINING_ND_FILE, path)
 
 
-class TherapistInteractionAPI(MetabaseAPIClient):
+class InteractionAPI(MetabaseAPIClient):
 
     def __init__(self) -> None:
         super().__init__()

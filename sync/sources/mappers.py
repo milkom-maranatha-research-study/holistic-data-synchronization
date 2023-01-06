@@ -4,9 +4,9 @@ from dask.dataframe import Series
 from typing import Dict, List, Tuple
 
 
-class TherapistOrganizationMapper:
+class TherapistMapper:
 
-    def to_organization_dictionaries(self, dataframe: dask_dataframe) -> List[Dict]:
+    def to_organizations(self, dataframe: dask_dataframe) -> List[Dict]:
         """
         Returns list of the Organization ID dictionary from the given `dataframe`.
         """
@@ -16,9 +16,9 @@ class TherapistOrganizationMapper:
             for row in dataframe.itertuples()
         ]
 
-    def to_therapists_organization_map(self, dataframe: dask_dataframe) -> Dict:
+    def to_organization_therapists_map(self, dataframe: dask_dataframe) -> Dict:
         """
-        Returns a map of the therapists organization from that given `dataframe`.
+        Returns a map of the therapists from that given `dataframe`.
         """
 
         thers_org_map = {}
@@ -54,9 +54,9 @@ class TherapistOrganizationMapper:
         }
 
 
-class TherapistInteractionsMapper:
+class InteractionMapper:
 
-    def to_therapist_interaction_map(self, dataframe: dask_dataframe) -> Dict:
+    def to_therapist_interactions_map(self, dataframe: dask_dataframe) -> Dict:
         """
         Returns a map of interactions therapist from that given `dataframe`.
         """

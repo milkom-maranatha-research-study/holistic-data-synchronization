@@ -5,15 +5,15 @@ from dateutil.parser import parse
 from unittest import TestCase
 
 from sync.sources.mappers import (
-    TherapistOrganizationMapper,
-    TherapistInteractionsMapper
+    TherapistMapper,
+    InteractionMapper
 )
 
 
 class TestTherapistOrganizationMapper(TestCase):
 
     def setUp(self):
-        self.mapper = TherapistOrganizationMapper()
+        self.mapper = TherapistMapper()
 
     def test_to_organization_dictionaries_success_1(self):
         """
@@ -27,7 +27,7 @@ class TestTherapistOrganizationMapper(TestCase):
         dataframe = dask_dataframe.from_pandas(pd_dataframe, npartitions=2)
 
         expected = [{'organization_id': 1}, {'organization_id': 2}, {'organization_id': 3}, {'organization_id': 4}, {'organization_id': 5}]
-        actual = self.mapper.to_organization_dictionaries(dataframe)
+        actual = self.mapper.to_organizations(dataframe)
 
         self.assertCountEqual(expected, actual)
 
@@ -44,7 +44,7 @@ class TestTherapistOrganizationMapper(TestCase):
         dataframe = dask_dataframe.from_pandas(pd_dataframe, npartitions=2)
 
         expected = [{'organization_id': 1}, {'organization_id': 2}, {'organization_id': 3}, {'organization_id': 4}, {'organization_id': 5}]
-        actual = self.mapper.to_organization_dictionaries(dataframe)
+        actual = self.mapper.to_organizations(dataframe)
 
         self.assertCountEqual(expected, actual)
 
@@ -60,7 +60,7 @@ class TestTherapistOrganizationMapper(TestCase):
         dataframe = dask_dataframe.from_pandas(pd_dataframe, npartitions=2)
 
         with self.assertRaises(ValueError):
-            self.mapper.to_organization_dictionaries(dataframe)
+            self.mapper.to_organizations(dataframe)
 
     def test_to_therapists_organization_map_success_1(self):
         """
@@ -85,7 +85,7 @@ class TestTherapistOrganizationMapper(TestCase):
             3: [{'date_joined': '2021-04-05', 'therapist_id': 't4'}],
             4: [{'date_joined': '2021-05-01', 'therapist_id': 't5'}]
         }
-        actual = self.mapper.to_therapists_organization_map(dataframe)
+        actual = self.mapper.to_organization_therapists_map(dataframe)
 
         self.assertDictEqual(expected, actual)
 
@@ -113,7 +113,7 @@ class TestTherapistOrganizationMapper(TestCase):
             3: [{'date_joined': '2021-04-05', 'therapist_id': 't4'}],
             4: [{'date_joined': '2021-05-01', 'therapist_id': 't5'}]
         }
-        actual = self.mapper.to_therapists_organization_map(dataframe)
+        actual = self.mapper.to_organization_therapists_map(dataframe)
 
         self.assertDictEqual(expected, actual)
 
@@ -135,7 +135,7 @@ class TestTherapistOrganizationMapper(TestCase):
         dataframe = dask_dataframe.from_pandas(pd_dataframe, npartitions=2)
 
         with self.assertRaises(ValueError):
-            self.mapper.to_therapists_organization_map(dataframe)
+            self.mapper.to_organization_therapists_map(dataframe)
 
     def test_get_therapist_dict_success_1(self):
         """
@@ -218,7 +218,7 @@ class TestTherapistOrganizationMapper(TestCase):
 class TestTherapistInteractionsMapper(TestCase):
 
     def setUp(self):
-        self.mapper = TherapistInteractionsMapper()
+        self.mapper = InteractionMapper()
 
     def test_to_therapist_interaction_map_success_1(self):
         """
@@ -251,7 +251,7 @@ class TestTherapistInteractionsMapper(TestCase):
                 {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
-        actual = self.mapper.to_therapist_interaction_map(dataframe)
+        actual = self.mapper.to_therapist_interactions_map(dataframe)
 
         self.assertDictEqual(expected, actual)
 
@@ -287,7 +287,7 @@ class TestTherapistInteractionsMapper(TestCase):
                 {'interaction_date': '2021-04-05', 'chat_count': 2, 'call_count': 1, 'counter': 2}
             ]
         }
-        actual = self.mapper.to_therapist_interaction_map(dataframe)
+        actual = self.mapper.to_therapist_interactions_map(dataframe)
 
         self.assertDictEqual(expected, actual)
 
@@ -310,7 +310,7 @@ class TestTherapistInteractionsMapper(TestCase):
         dataframe = dask_dataframe.from_pandas(pd_dataframe, npartitions=2)
 
         with self.assertRaises(ValueError):
-            self.mapper.to_therapist_interaction_map(dataframe)
+            self.mapper.to_therapist_interactions_map(dataframe)
 
     def test_group_by_therapist_and_interaction_date_success_1(self):
         """

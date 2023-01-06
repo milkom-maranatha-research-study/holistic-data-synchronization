@@ -5,8 +5,8 @@ from datetime import datetime
 from helpers import print_time_duration
 from settings import configure_logging
 from sources.operations import (
-    TherapistJoiningNicedayMetabaseOperation,
-    TherapistInteractionsMetabaseOperation
+    TherapistMetabaseOperation,
+    InteractionMetabaseOperation
 )
 from targets.operations import (
     OrganizationBackendOperation,
@@ -22,8 +22,8 @@ class TherapistSynchronizer:
 
     def __init__(self) -> None:
         self.backend_org_operation = OrganizationBackendOperation()
-        self.backend_therapist_operation = TherapistBackendOperation()
-        self.metabase_operation = TherapistJoiningNicedayMetabaseOperation()
+        self.backend_ther_operation = TherapistBackendOperation()
+        self.metabase_ther_operation = TherapistMetabaseOperation()
 
         self._start_sync()
 
@@ -35,7 +35,7 @@ class TherapistSynchronizer:
         start_time = datetime.now()
 
         # Step 1 - Collect data from Metabase
-        self.metabase_operation.collect_data()
+        self.metabase_ther_operation.collect_data()
 
         # Step 2 - Sync Organization data from Metabase to the Backend database
         self._sync_organizations()
@@ -53,7 +53,7 @@ class TherapistSynchronizer:
         """
 
         logger.info("Retrieving Organization objects from Metabase data...")
-        organizations = self.metabase_operation.get_organizations()
+        organizations = self.metabase_ther_operation.get_organizations()
 
         logger.info("Upserting Organization objects in the Backend...")
         self.backend_org_operation.upsert(organizations)
@@ -64,18 +64,18 @@ class TherapistSynchronizer:
         """
 
         logger.info("Retrieving Therapists objects from Metabase data...")
-        therapists_org_map = self.metabase_operation.get_therapists_organization_map()
+        org_therapists_map = self.metabase_ther_operation.get_organization_therapists_map()
 
         logger.info("Upserting every Therapists object in the Backend...")
-        for org_id, therapists in therapists_org_map.items():
-            self.backend_therapist_operation.upsert(org_id, therapists)
+        for org_id, therapists in org_therapists_map.items():
+            self.backend_ther_operation.upsert(org_id, therapists)
 
 
 class InteractionSynchronizer:
 
     def __init__(self) -> None:
         self.backend_interaction_operation = InteractionBackendOperation()
-        self.metabase_operation = TherapistInteractionsMetabaseOperation()
+        self.metabase_operation = InteractionMetabaseOperation()
 
         self._start_sync()
 
@@ -110,10 +110,10 @@ class InteractionSynchronizer:
             tag = f"Batch: from {start} to {end}"
 
             logger.info(f"{tag} - Retrieving Therapist Interactions objects from Metabase data...")
-            interactions_ther_map = self.metabase_operation.get_interactions_therapist_map(start, end)
+            ther_interactions_map = self.metabase_operation.get_therapist_interactions_map(start, end)
 
             logger.info(f"{tag} - Upserting every Therapist Interactions object in the Backend...")
-            for ther_id, interactions in interactions_ther_map.items():
+            for ther_id, interactions in ther_interactions_map.items():
                 self.backend_interaction_operation.upsert(ther_id, interactions)
 
             start = end
